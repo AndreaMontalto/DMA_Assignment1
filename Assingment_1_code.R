@@ -79,7 +79,14 @@ plot(model_test$residuals)
 ## Question 11: 
 plot(model_test_good$residuals)
 
-#Question 12A: 
+#Question 12A: Identify the interaction factor 
 summary(model_test_good)
-model_int <- lm(y ~ x1 +x5 + x3*x4, data = trainingset)
+model_int <- lm(y ~ x1 + x3 + x4 + x5 + x1:x3 + x1:x4 + x1:x5 + x3:x4 + x3:x5 + x4:x5, data = testset)
 summary(model_int)
+
+model_int_1 <- lm(y ~ x1 + x3 + x4 + x5 + x1:x5, data = testset) #the model with the interaction x1-x5 has a highest R-squared
+summary(model_int_1)
+model_int_2 <- lm(y ~ x1 + x3 + x4 + x5 + x4:x5, data = testset)
+summary(model_int_2)
+
+
