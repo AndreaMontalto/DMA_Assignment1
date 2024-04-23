@@ -41,8 +41,7 @@ qqline(model_lm$residuals)
 
 hist(model_lm$residuals, breaks = 25, xlab = "Residuals", ylab = "Frequency",
      main = "Histogram of Residuals", col = "white", prob = TRUE)
-# Add a density line
-lines(density(residual), col = "red")
+
 
 #checking for heteroskedasticity
 bptest(model_lm) #p-value above 0.05 so there is heteroskedasticity
@@ -62,7 +61,7 @@ model_test <- lm(y ~., data = testset)
 summary(model_test) #the smallest p-value is the one of x4: 0.00337
 
 #checking for linearity 
-plot(model_test_good$residuals)
+plot(model_test$residuals)
 abline(0,0, color= 'red')
 
 ## Question 9: Examine the presence of multicollinearity ## 
@@ -89,4 +88,12 @@ summary(model_int_1)
 model_int_2 <- lm(y ~ x1 + x3 + x4 + x5 + x4:x5, data = testset)
 summary(model_int_2)
 
-#tesing 
+## Question 13: 
+model_Q13 <- lm(y ~ x3 + x4 + x1:x5, data = testset)
+summary(model_Q13)
+
+hist(model_Q13$residual, breaks = 25, xlab = "Residuals", ylab = "Frequency",
+     main = "Histogram of Residuals", col = "white", prob = TRUE)
+plot(model_Q13$residuals, testset$x1)
+plot(model_Q13$residuals, testset$x2)
+plot(model_Q13$residuals, testset$x5)
