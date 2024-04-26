@@ -28,7 +28,7 @@ summary(model_lm) #The model shows as adjusted R-squared of 0.937
 
 ## Question 5: Using a significance level of 2.5%, infer if the relationship between x4 and y is significant ## 
 
-#as the p-value of x4 is 0.404%, we infer that there is a signifact relationship
+#as the p-value of x4 is 0.404%, we infer that there is a significant relationship
 
 ## Question 6: 
 
@@ -47,7 +47,7 @@ hist(model_lm$residuals, breaks = 25, xlab = "Residuals", ylab = "Frequency",
 bptest(model_lm) #p-value above 0.05 so there is heteroskedasticity
 
 plot(model_lm$residuals)
-
+abline(0, 0, col = "red")
 
 #indeed, by plotting a Q-Q plot and an histogram it seems that the assumption of normality is not broken
 
@@ -67,12 +67,12 @@ abline(0,0, color= 'red')
 ## Question 9: Examine the presence of multicollinearity ## 
 # We can check for multicollinearity by computing the Variance inflation factor (VIF)
 
-vif(model_test) #there is multicollinearity among variables x2 and x3
+vif(model_test) #there is multicollinearity among variables x1 and x2
 
 ## Question 10: Handle multicollinearity ## 
 
-model_test_good <- lm(y ~ x1 + x3 + x4 + x5, data = testset)
-summary(model_test_good) #p-value really small: 3.021e-12
+model_test_good <- lm(y ~  x3 + x4 + x5, data = testset)
+summary(model_test_good) #p-value really small: 0.007247
 plot(model_test$residuals)
 
 ## Question 11: 
@@ -80,20 +80,60 @@ plot(model_test_good$residuals)
 
 #Question 12A: Identify the interaction factor 
 summary(model_test_good)
-model_int <- lm(y ~ x1 + x3 + x4 + x5 + x1:x3 + x1:x4 + x1:x5 + x3:x4 + x3:x5 + x4:x5, data = testset)
+model_int <- lm(y ~ x2+ x3 + x4 + x5 + x3:x4 + x2:x3 +x2:x4+ x2:x5 + x3:x4 +x3:x5 + x4:x5, data = testset)
 summary(model_int)
-
-model_int_1 <- lm(y ~ x1 + x3 + x4 + x5 + x1:x5, data = testset) #the model with the interaction x1-x5 has a highest R-squared
-summary(model_int_1)
-model_int_2 <- lm(y ~ x1 + x3 + x4 + x5 + x4:x5, data = testset)
-summary(model_int_2)
+# the most significant interaction is x3:x4
 
 ## Question 13: 
-model_Q13 <- lm(y ~ x3 + x4 + x1:x5, data = testset)
+model_Q13 <- lm(y ~ x2 + x5 + x3:x4, data = testset)
 summary(model_Q13)
 
 hist(model_Q13$residual, breaks = 25, xlab = "Residuals", ylab = "Frequency",
      main = "Histogram of Residuals", col = "white", prob = TRUE)
-plot(model_Q13$residuals, testset$x1)
 plot(model_Q13$residuals, testset$x2)
+abline(0,0, color= 'red')
 plot(model_Q13$residuals, testset$x5)
+abline(0.4,0, color= 'red')
+
+## Question 14: plotting residuals against predictors that were not used ## 
+# x1, x3, x4 
+hist(model_Q13$residuals, breaks = 25, xlab = "Residuals", ylab = "Frequency",
+     main = "Histogram of Residuals", col = "white", prob = TRUE)
+plot(model_Q13$residuals, testset$x1)
+plot(model_Q13$residuals, testset$x3)
+plot(model_Q13$residuals, testset$x4)
+
+qqnorm(model_Q13$residuals)
+qqline(model_Q13$residuals) #normality holds 
+
+vif(model_Q13) #multicollinearity holds
+
+plot(testset$x5, model_Q13$residual, xlab="X", ylab="Residuals",main = "Plot residuals against X") 
+abline(0,0, color= 'red') #x5 does not seem linear
+     
+## Question 15: Solving normality ## 
+testset$x5_squared <- testset$x5 * testset$x5
+model_Q15 <- lm(y ~x2 + x5 + x5_squared + x3:x4, data = testset)
+summary(model_Q15)
+
+#we can remove x5 as not significant 
+model_Q15 <- lm(y ~x2 + x5_squared + x3:x4, data = testset)
+summary(model_Q15)
+
+qqnorm(model_Q15$residuals)
+qqline(model_Q15$residuals) # normality holds
+
+plot(testset$x2, model_Q15$residual, xlab="X2", ylab="Residuals",
+     main = "Plot residuals against X2")
+
+plot(testset$x5_squared, model_Q15$residual, xlab="X5", ylab="Residuals",
+     main = "Plot residuals against X5_squared")
+## Q16:Checking for heteroskedasticity ## 
+bptest(model_Q15)
+plot(fitted(model_Q15), residuals(model_Q15), main = "Residuals vs. Fitted")
+
+#there is heteroskedasticity
+
+#Q18: Checking for exogenity ## 
+model_Q18 <- lm(y ~ x2 + x3:x4 , data = testset)
+summary(model_Q18)
