@@ -53,7 +53,7 @@ plot(model_lm$residuals)
 
 ## PART II: Using test dataset ## 
 
-testset <- read.csv('testing data set.csv')
+testset <- read.csv('testing data set-7.csv')
 
 ## Question 8: Report the smallest p-value on the model run on the test set ## 
 
